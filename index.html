@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <script src="pdfmake/pdfmake.min.js"></script>
+    <script>
+        var docDefinition = {
+            // a string or { width: number, height: number }
+            pageSize: { width: 792, height: 2000 },
+
+            // by default we use portrait, you can change it to landscape if you wish
+            pageOrientation: 'landscape',
+
+            // [left, top, right, bottom] or [horizontal, vertical] or just a number for equal margins
+            pageMargins: [40, 60, 40, 60],
+        };
+
+        pdfMake.createPdf(docDefinition).open();
+    </script>
+
+</body>
+
+</html>
