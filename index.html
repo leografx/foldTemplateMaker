@@ -13,13 +13,22 @@
     <script>
         var docDefinition = {
             // a string or { width: number, height: number }
-            pageSize: { width: 792, height: 2000 },
+            pageSize: { width: 792, height: 612 },
 
             // by default we use portrait, you can change it to landscape if you wish
             pageOrientation: 'landscape',
 
             // [left, top, right, bottom] or [horizontal, vertical] or just a number for equal margins
-            pageMargins: [40, 60, 40, 60],
+            pageMargins: [0, 0, 0, 0],
+
+            content: [{
+                svg: `<svg viewBox="0 0 792 612" xmlns="http://www.w3.org/2000/svg">
+  <!-- Simple rectangle -->
+  <rect fill="red" width="${792 / 3 - .125}" height="612" />
+  <rect stroke="black" fill="red" x="${792 / 3 - .125}" width="${792 / 3 + .0625}" height="612" />
+  <rect stroke="black" fill="red" x="${(792 / 3 - .125) + (792 / 3 + .0625)}" width="${792 / 3 + .0625}" height="612" />
+</svg>`
+            }]
         };
 
         pdfMake.createPdf(docDefinition).open();
