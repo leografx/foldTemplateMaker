@@ -5,33 +5,110 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
 </head>
 
 <body>
+    <h1>Dynamic Trifold Template</h1>
+    <label for="width">Width</label>
+    <input type="number" id="width" value="11">
+    <label for="height">Height</label>
+    <input type="number" id="height" value="8.5">
+    <label for="margin">Margin</label>
+    <input type="number" id="margin" value=".25">
+    <input id="submit" type="submit" value="create">
+
     <script src="pdfmake/pdfmake.min.js"></script>
+    <script src="pdfmake/vfs_fonts.js"></script>
     <script>
-        var docDefinition = {
-            // a string or { width: number, height: number }
-            pageSize: { width: 792, height: 612 },
+        document.querySelector('#submit').addEventListener('click', createTemplate);
 
-            // by default we use portrait, you can change it to landscape if you wish
-            pageOrientation: 'landscape',
+        function createTemplate() {
+            var width = document.querySelector('#width').value;
+            var height = document.querySelector('#height').value;
+            var margin = (document.querySelector('#margin').value * 72);
 
-            // [left, top, right, bottom] or [horizontal, vertical] or just a number for equal margins
-            pageMargins: [0, 0, 0, 0],
+            var fold = calculatePanels(width, height);
 
-            content: [{
-                svg: `<svg viewBox="0 0 792 612" xmlns="http://www.w3.org/2000/svg">
-  <!-- Simple rectangle -->
-  <rect fill="red" width="${792 / 3 - .125}" height="612" />
-  <rect stroke="black" fill="red" x="${792 / 3 - .125}" width="${792 / 3 + .0625}" height="612" />
-  <rect stroke="black" fill="red" x="${(792 / 3 - .125) + (792 / 3 + .0625)}" width="${792 / 3 + .0625}" height="612" />
-</svg>`
-            }]
-        };
+            var docDefinition = {
+                // a string or { width: number, height: number }
+                pageSize: {
+                    width: fold.width,
+                    height: fold.height
+                },
 
-        pdfMake.createPdf(docDefinition).open();
+                // by default we use portrait, you can change it to landscape if you wish
+                // pageOrientation: 'landscape',
+
+                // [left, top, right, bottom] or [horizontal, vertical] or just a number for equal margins
+                pageMargins: [0, 0, 0, 0],
+
+                content: [{
+                    svg: `<svg viewBox="0 0 ${fold.width} ${fold.height}" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Simple rectangle -->
+                    <text>Hello!</text>
+                    <rect fill="red"x="${fold.sideA1x}" width="${fold.sideA1w}" height="${fold.height}" />
+                    <rect fill="white" stroke="green" y="${margin}" x="${fold.sideA1x + margin}" width="${fold.sideA1w - (margin *2)}" height="${fold.height - (margin * 2)}" />
+                    <rect stroke="black" fill="red" x="${fold.sideA2x}" width="${fold.sideA2w}" height="${fold.height}" />
+                    <rect stroke="green" fill="white" y="${margin}" x="${fold.sideA2x + margin}" width="${fold.sideA2w - (margin * 2)}" height="${fold.height - (margin * 2)}" />
+                    <rect stroke="black" fill="red" x="${fold.sideA3x}" width="${fold.sideA3w}" height="${fold.height}" />
+                    <rect stroke="green" fill="white" y="${margin}" x="${fold.sideA3x + margin}" width="${fold.sideA3w - (margin * 2)}" height="${fold.height - (margin * 2)}" />
+                    
+                    <rect fill="none" x="0" y="0" width="${fold.width}" height="${fold.height}"></rect>
+                    <text x="${fold.width / 2}"  y="${fold.height / 2}" fill="silver" text-anchor="middle" alignment-baseline="central">SIDE A</text>
+                </svg>`
+                }, {
+                    svg: `<svg viewBox="0 0 ${fold.width} ${fold.height}" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Simple rectangle -->
+                    <rect fill="red" x="${fold.sideB1x}" width="${fold.sideB1w}" height="${fold.height}" />
+                    <rect fill="white" stroke="green" y="${margin}" x="${fold.sideB1x + margin}" width="${fold.sideB1w - (margin *2)}" height="${fold.height- (margin *2)}" />
+                    <rect stroke="black" fill="red" x="${fold.sideB2x}" width="${fold.sideB2w}" height="${fold.height}" />
+                    <rect stroke="green" fill="white" y="${margin}" x="${fold.sideB2x+margin}" width="${fold.sideB2w - (margin *2)}" height="${fold.height - (margin *2)}" />
+                    <rect stroke="black" fill="red" x="${fold.sideB3x}" width="${fold.sideB3w}" height="${fold.height}" />
+                    <rect stroke="green" fill="white" y="${margin}" x="${fold.sideB3x + margin}" width="${fold.sideB3w -(margin*2)}" height="${fold.height- (margin*2)}" />
+                    <rect fill="none" x="0" y="0" width="${fold.width}" height="${fold.height}"></rect>
+                    <text x="${fold.width / 2}"  y="${fold.height / 2}" fill="silver" text-anchor="middle" alignment-baseline="central">SIDE B</text>
+               
+                    </svg>`
+                }]
+            };
+
+            pdfMake.createPdf(docDefinition).open();
+
+            function calculatePanels(width, height, margin) {
+                var sideA1x = 0,
+                    sideA2x = ((width * 72) / 3) - (.125 * 72),
+                    sideA3x = ((width * 72) / 3) - (.125 * 72) + ((width * 72) / 3) + (.0625 * 72),
+
+                    sideA1w = ((width * 72) / 3) - (.125 * 72),
+                    sideA2w = ((width * 72) / 3) + (.0625 * 72),
+                    sideA3w = ((width * 72) / 3) + (.0625 * 72)
+
+                var sideB1x = 0,
+                    sideB2x = ((width * 72) / 3) + (.0625 * 72),
+                    sideB3x = ((width * 72) / 3) + (.0625 * 72) + ((width * 72) / 3) + (.0625 * 72),
+
+                    sideB1w = ((width * 72) / 3) + (.0625 * 72),
+                    sideB2w = ((width * 72) / 3) + (.0625 * 72),
+                    sideB3w = ((width * 72) / 3) - (.125 * 72)
+
+                return {
+                    width: width * 72,
+                    height: height * 72,
+                    sideA1x,
+                    sideA2x,
+                    sideA3x,
+                    sideA1w,
+                    sideA2w,
+                    sideA3w,
+                    sideB1x,
+                    sideB2x,
+                    sideB3x,
+                    sideB1w,
+                    sideB2w,
+                    sideB3w
+                };
+            }
+        }
     </script>
 
 </body>
